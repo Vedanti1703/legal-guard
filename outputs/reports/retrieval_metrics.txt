@@ -1,0 +1,10 @@
+============================================================
+ACORD SEMANTIC RETRIEVAL EVALUATION REPORT
+Model: sentence-transformers/all-MiniLM-L6-v2
+Split: Test (57 queries evaluated against 3931 clauses)
+============================================================
+Recall@1:   0.0145 (1.45%)
+Recall@5:   0.0567 (5.67%)
+Recall@10:  0.0986 (9.86%)
+MRR:        0.2683
+============================================================

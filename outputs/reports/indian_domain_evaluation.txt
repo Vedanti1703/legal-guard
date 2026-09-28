@@ -1,0 +1,58 @@
+================================================================================
+INDIAN LEGAL DOMAIN EVALUATION REPORT
+Project: NLP for Detecting Hidden Fees and Unfavorable Terms in Consumer T&Cs
+================================================================================
+Total Indian Clauses Evaluated: 163
+Conceptually Mapped Clauses (with ground-truth labels): 35
+Unmapped Clauses (general statutory text, arbitration, etc.): 128
+
+--- DATASET INDEPENDENCE AUDIT ---
+Verification: The Indian Legal Dataset contains 0 overlap with CUAD SEC contracts.
+All Indian clauses originate from the Indian Contract Act 1872, LegalEagle Indian
+Good vs. Bad benchmarks, and 12 curated Indian contract risk patterns.
+
+--- PERFORMANCE ON MAPPED INDIAN GROUND TRUTH ---
+Zero-Shot Domain Transfer Accuracy: 0.1714 (17.14%)
+
+Detailed Classification Breakdown:
+                      precision    recall  f1-score   support
+
+   automatic_renewal       1.00      0.50      0.67         2
+liability_limitation       0.00      0.00      0.00         2
+        other_clause       0.00      0.00      0.00         0
+ other_consumer_risk       0.00      0.00      0.00        18
+             penalty       0.00      0.00      0.00         5
+    post_termination       0.00      0.00      0.00         0
+         termination       0.83      0.62      0.71         8
+
+            accuracy                           0.17        35
+           macro avg       0.26      0.16      0.20        35
+        weighted avg       0.25      0.17      0.20        35
+
+
+--- SAMPLE HIGH-CONFIDENCE INDIAN CLAUSE PREDICTIONS ---
+[0.97] IND_CT_SEC_2_BAD (Ground Truth: 'termination') -> Predicted: 'termination'
+       Snippet: "Company may terminate this agreement at any time without notice or reason...."
+
+[0.96] SEC_2_PAT_2 (Ground Truth: 'termination') -> Predicted: 'termination'
+       Snippet: "Company may terminate this agreement immediately at any time without notice...."
+
+[0.84] SEC_2_PAT_1 (Ground Truth: 'termination') -> Predicted: 'termination'
+       Snippet: "Either party may terminate with 3 days notice...."
+
+[0.81] SEC_11_PAT_2 (Ground Truth: 'automatic_renewal') -> Predicted: 'automatic_renewal'
+       Snippet: "This agreement shall automatically renew for successive one year terms unless terminated...."
+
+[0.77] IND_CT_SEC_2_GOOD (Ground Truth: 'termination') -> Predicted: 'termination'
+       Snippet: "Either party may terminate with 30 days written notice. Company shall pay all dues within 7 days of termination...."
+
+[0.73] SEC_2_PAT_2 (Ground Truth: 'termination') -> Predicted: 'termination'
+       Snippet: "Company reserves the right to terminate at any time. Vendor cannot terminate without company approval...."
+
+[0.71] SEC_4_PAT_1 (Ground Truth: 'liability_limitation') -> Predicted: 'other_clause'
+       Snippet: "Neither party limits its liability under this agreement...."
+
+[0.64] SEC_3_PAT_3 (Ground Truth: 'other_consumer_risk') -> Predicted: 'other_clause'
+       Snippet: "Indemnity includes direct, indirect, consequential, punitive, special and incidental damages...."
+
+================================================================================

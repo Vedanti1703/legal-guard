@@ -1,0 +1,51 @@
+================================================================================
+DATA QUALITY & INTEGRITY REPORT
+Project: NLP for Detecting Hidden Fees and Unfavorable Terms in Consumer T&Cs
+================================================================================
+
+1. CUAD (Contract Understanding Atticus Dataset) QUALITY AUDIT:
+   - Total Cleaned Records: 3124
+   - Split Breakdown: Train=2240, Val=474, Test=410
+   - Contract/Document Counts: Train Docs=332, Val Docs=71, Test Docs=72
+   - Document Leakage Check (Train/Val): 0 overlapping docs
+   - Document Leakage Check (Train/Test): 0 overlapping docs
+   - Document Leakage Check (Val/Test): 0 overlapping docs
+   - Status: [PASSED - ZERO LEAKAGE]
+   - Empty Clauses: 0
+   - Short Clauses (<20 chars): 95
+   - Long Clauses (>2000 chars): 9
+   - Unique Clause Texts: 2924
+   - Duplicate Standard Boilerplate Instances: 200
+   - Label Distribution:
+       * Post-Termination Services          : 449
+       * Notice Period To Terminate Renewal : 121
+       * Termination For Convenience        : 246
+       * Revenue/Profit Sharing             : 416
+       * Liquidated Damages                 : 121
+       * other_clause                       : 1562
+       * Renewal Term                       : 209
+
+2. ACORD RETRIEVAL DATASET QUALITY AUDIT:
+   - Total Graded Pairs: 126659
+   - Empty Clauses: 0
+   - Ratings Distribution (0-4): {0: 123168, 1: 2295, 2: 403, 3: 663, 4: 130}
+   - Highly Relevant / Target Pairs (Rating >= 2): 1196
+   - Non-Relevant / Background Pairs (Rating < 2): 125463
+
+3. INDIAN LEGAL DATASET QUALITY AUDIT:
+   - Total Segmented Clauses: 163
+   - Empty Clauses: 0
+   - Short Clauses (<20 chars): 0
+   - Conceptually Mapped Clauses: 35
+   - Unmapped Statutory / Other Clauses: 128
+   - Overlap with CUAD SEC Contracts: 0 documents
+   - Status: [PASSED - ZERO OVERLAP WITH CUAD CONTRACTS]
+   - Label Distribution:
+       * other_consumer_risk           : 18
+       * termination                   : 8
+       * unmapped                      : 128
+       * liability_limitation          : 2
+       * penalty                       : 5
+       * automatic_renewal             : 2
+
+================================================================================

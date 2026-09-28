@@ -1,0 +1,10 @@
+{
+  "model_name": "sentence-transformers/all-MiniLM-L6-v2",
+  "evaluation_split": "test",
+  "evaluated_test_queries": 57,
+  "total_corpus_clauses": 3931,
+  "recall_at_1": 0.0145,
+  "recall_at_5": 0.0567,
+  "recall_at_10": 0.0986,
+  "mrr": 0.2683
+}

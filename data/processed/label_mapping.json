@@ -1,0 +1,40 @@
+{
+  "project_title": "NLP for Detecting Hidden Fees and Unfavorable Terms in Consumer Terms & Conditions",
+  "version": "1.0",
+  "cuad_to_unified": {
+    "Renewal Term": "automatic_renewal",
+    "Notice Period To Terminate Renewal": "renewal_notice",
+    "Termination For Convenience": "termination",
+    "Liquidated Damages": "penalty",
+    "Post-Termination Services": "post_termination",
+    "Revenue/Profit Sharing": "revenue_sharing",
+    "Price Restrictions": "price_increase_condition",
+    "Cap On Liability": "liability_limitation"
+  },
+  "indian_risk_to_unified": {
+    "SECTION 1: NON-COMPETE CLAUSES": "other_consumer_risk",
+    "SECTION 2: TERMINATION CLAUSES": "termination",
+    "SECTION 3: INDEMNITY CLAUSES": "other_consumer_risk",
+    "SECTION 4: LIABILITY LIMITATION CLAUSES": "liability_limitation",
+    "SECTION 5: CONFIDENTIALITY AND NDA CLAUSES": "unmapped",
+    "SECTION 6: ARBITRATION CLAUSES": "unmapped",
+    "SECTION 7: INTELLECTUAL PROPERTY CLAUSES": "unmapped",
+    "SECTION 8: GOVERNING LAW AND JURISDICTION CLAUSES": "unmapped",
+    "SECTION 9: PAYMENT CLAUSES": "penalty",
+    "SECTION 10: FORCE MAJEURE CLAUSES": "unmapped",
+    "SECTION 11: AUTO-RENEWAL CLAUSES": "automatic_renewal",
+    "SECTION 12: DATA PROTECTION CLAUSES": "unmapped"
+  },
+  "future_consumer_tnc_schema": [
+    "additional_fee",
+    "cancellation_fee",
+    "penalty",
+    "automatic_renewal",
+    "refund_restriction",
+    "time_dependent_charge",
+    "additional_financial_obligation",
+    "price_increase_condition",
+    "other_consumer_risk",
+    "none"
+  ]
+}

@@ -1,0 +1,19 @@
+TF-IDF + LOGISTIC REGRESSION BASELINE REPORT
+============================================================
+Accuracy:    0.8390
+Macro F1:    0.7534
+Weighted F1: 0.8385
+
+                                    precision    recall  f1-score   support
+
+                Liquidated Damages       0.88      0.47      0.61        15
+Notice Period To Terminate Renewal       0.50      0.63      0.56        19
+         Post-Termination Services       0.78      0.82      0.80        61
+                      Renewal Term       0.69      0.62      0.65        29
+            Revenue/Profit Sharing       0.83      0.95      0.88        40
+       Termination For Convenience       0.81      0.93      0.86        41
+                      other_clause       0.93      0.88      0.91       205
+
+                          accuracy                           0.84       410
+                         macro avg       0.77      0.76      0.75       410
+                      weighted avg       0.85      0.84      0.84       410

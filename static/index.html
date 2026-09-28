@@ -1,0 +1,1285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LegalGuard NLP - Consumer T&C & Contract Risk Intelligence</title>
+  
+  <!-- Google Fonts: Outfit & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <style>
+    :root {
+      --bg-dark: #090D16;
+      --bg-card: #111726;
+      --bg-card-hover: #172033;
+      --bg-input: #151D2F;
+      --border-color: rgba(255, 255, 255, 0.08);
+      --border-highlight: rgba(99, 102, 241, 0.3);
+      
+      --text-main: #F3F4F6;
+      --text-muted: #9CA3AF;
+      --text-dim: #6B7280;
+
+      --primary: #6366F1;
+      --primary-hover: #4F46E5;
+      --primary-glow: rgba(99, 102, 241, 0.35);
+
+      --critical: #EF4444;
+      --critical-bg: rgba(239, 68, 68, 0.12);
+      --high: #F97316;
+      --high-bg: rgba(249, 115, 22, 0.12);
+      --medium: #F59E0B;
+      --medium-bg: rgba(245, 158, 11, 0.12);
+      --low: #10B981;
+      --low-bg: rgba(16, 185, 129, 0.12);
+
+      --accent-cyan: #06B6D4;
+      --accent-purple: #A855F7;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Background Ambient Glows */
+    .glow-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+    .glow-ball-1 {
+      position: absolute;
+      top: -10%;
+      left: 20%;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, rgba(0,0,0,0) 70%);
+      border-radius: 50%;
+    }
+    .glow-ball-2 {
+      position: absolute;
+      bottom: 10%;
+      right: 15%;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(6, 182, 212, 0.12) 0%, rgba(0,0,0,0) 70%);
+      border-radius: 50%;
+    }
+
+    header {
+      position: relative;
+      z-index: 10;
+      border-bottom: 1px solid var(--border-color);
+      background: rgba(11, 15, 25, 0.85);
+      backdrop-filter: blur(12px);
+      padding: 1rem 2rem;
+    }
+
+    .nav-wrapper {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 1.35rem;
+      color: #FFF;
+      text-decoration: none;
+    }
+    .brand-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, var(--primary), var(--accent-cyan));
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1.2rem;
+      box-shadow: 0 0 15px var(--primary-glow);
+    }
+    .brand-text span {
+      color: var(--accent-cyan);
+    }
+
+    .header-badges {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      font-size: 0.85rem;
+    }
+    .header-pill {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      padding: 0.35rem 0.85rem;
+      border-radius: 20px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      background-color: var(--low);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--low);
+    }
+
+    main {
+      position: relative;
+      z-index: 5;
+      max-width: 1400px;
+      width: 100%;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+      flex: 1;
+    }
+
+    /* Hero section */
+    .hero-banner {
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+    .hero-banner h1 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 2.25rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #FFFFFF 30%, #94A3B8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.5rem;
+    }
+    .hero-banner p {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+      max-width: 750px;
+      margin: 0 auto;
+    }
+
+    /* Grid layout */
+    .workspace-grid {
+      display: grid;
+      grid-template-columns: 460px 1fr;
+      gap: 1.75rem;
+      align-items: start;
+    }
+    @media (max-width: 1100px) {
+      .workspace-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Cards */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 1.5rem;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+      transition: border-color 0.2s ease;
+    }
+    .card:hover {
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.25rem;
+    }
+    .card-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: #FFF;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .card-title i {
+      color: var(--primary);
+    }
+
+    /* Input Tabs & Options */
+    .input-methods {
+      display: flex;
+      gap: 0.5rem;
+      background: var(--bg-dark);
+      padding: 0.3rem;
+      border-radius: 10px;
+      margin-bottom: 1rem;
+    }
+    .input-tab-btn {
+      flex: 1;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      padding: 0.5rem 0.75rem;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+    }
+    .input-tab-btn.active {
+      background: var(--bg-card);
+      color: #FFF;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+
+    /* Presets Pills */
+    .presets-wrapper {
+      margin-bottom: 1rem;
+    }
+    .presets-title {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-dim);
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+    }
+    .preset-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    .preset-btn {
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      padding: 0.4rem 0.75rem;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .preset-btn:hover {
+      border-color: var(--primary);
+      color: #FFF;
+      background: rgba(99, 102, 241, 0.1);
+    }
+
+    /* File Dropzone */
+    .dropzone {
+      border: 2px dashed var(--border-color);
+      border-radius: 12px;
+      padding: 2rem 1rem;
+      text-align: center;
+      background: var(--bg-input);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      margin-bottom: 1rem;
+    }
+    .dropzone:hover, .dropzone.dragover {
+      border-color: var(--primary);
+      background: rgba(99, 102, 241, 0.05);
+    }
+    .dropzone-icon {
+      font-size: 2rem;
+      color: var(--primary);
+      margin-bottom: 0.75rem;
+    }
+
+    /* Textarea */
+    .contract-textarea {
+      width: 100%;
+      height: 280px;
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1rem;
+      color: var(--text-main);
+      font-family: inherit;
+      font-size: 0.9rem;
+      resize: vertical;
+      margin-bottom: 1rem;
+      transition: border-color 0.2s ease;
+    }
+    .contract-textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 10px var(--primary-glow);
+    }
+
+    .action-btn {
+      width: 100%;
+      background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+      color: white;
+      border: none;
+      border-radius: 12px;
+      padding: 0.9rem 1.5rem;
+      font-family: 'Outfit', sans-serif;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      box-shadow: 0 4px 20px var(--primary-glow);
+      transition: all 0.2s ease;
+    }
+    .action-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 25px var(--primary-glow);
+    }
+    .action-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Output Results Area */
+    .results-placeholder {
+      min-height: 500px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: var(--text-dim);
+      padding: 3rem;
+    }
+    .results-placeholder i {
+      font-size: 3.5rem;
+      margin-bottom: 1rem;
+      color: var(--border-highlight);
+    }
+
+    /* Contract Health Score & Metrics */
+    .score-banner {
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      gap: 1.5rem;
+      background: linear-gradient(135deg, rgba(17, 23, 38, 0.9), rgba(21, 29, 47, 0.9));
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 1.5rem;
+      margin-bottom: 1.75rem;
+      align-items: center;
+    }
+    @media (max-width: 768px) {
+      .score-banner {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .score-circle-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    
+    .gauge-score {
+      position: absolute;
+      font-family: 'Outfit', sans-serif;
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: #FFF;
+    }
+    .gauge-label {
+      margin-top: 0.5rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .verdict-info h3 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.4rem;
+      margin-bottom: 0.35rem;
+    }
+    .verdict-info p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      margin-bottom: 1rem;
+    }
+
+    /* Stats Row */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 0.75rem;
+    }
+    .stat-box {
+      background: var(--bg-dark);
+      border: 1px solid var(--border-color);
+      padding: 0.75rem;
+      border-radius: 10px;
+      text-align: center;
+    }
+    .stat-val {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.35rem;
+      font-weight: 700;
+    }
+    .stat-lbl {
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      text-transform: uppercase;
+    }
+
+    /* Top Alerts Container */
+    .alerts-card {
+      margin-bottom: 1.75rem;
+      background: rgba(239, 68, 68, 0.05);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+    .alert-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      font-size: 0.9rem;
+    }
+    .alert-item:last-child {
+      border-bottom: none;
+    }
+    .alert-item i {
+      color: var(--critical);
+      margin-top: 0.2rem;
+    }
+
+    /* Semantic Search Bar */
+    .search-card {
+      margin-bottom: 1.75rem;
+    }
+    .search-input-wrapper {
+      display: flex;
+      gap: 0.75rem;
+    }
+    .search-input {
+      flex: 1;
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 0.75rem 1rem;
+      color: var(--text-main);
+      font-size: 0.9rem;
+    }
+    .search-input:focus {
+      outline: none;
+      border-color: var(--accent-cyan);
+    }
+    .search-btn {
+      background: var(--accent-cyan);
+      color: #000;
+      border: none;
+      border-radius: 10px;
+      padding: 0 1.25rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* Financial Entities Table */
+    .financial-table-wrapper {
+      overflow-x: auto;
+      margin-bottom: 1.75rem;
+    }
+    .custom-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+    }
+    .custom-table th {
+      background: var(--bg-dark);
+      color: var(--text-muted);
+      text-align: left;
+      padding: 0.75rem 1rem;
+      font-weight: 600;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .custom-table td {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border-color);
+      color: var(--text-main);
+    }
+    .custom-table tr:hover td {
+      background: var(--bg-card-hover);
+    }
+
+    /* Filter Controls */
+    .filter-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+      flex-wrap: wrap;
+    }
+    .filter-btn-group {
+      display: flex;
+      gap: 0.4rem;
+    }
+    .filter-btn {
+      background: var(--bg-dark);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      padding: 0.4rem 0.85rem;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .filter-btn.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    /* Clause Inspector Cards */
+    .clause-item {
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1.25rem;
+      margin-bottom: 1rem;
+      transition: border-color 0.2s ease;
+    }
+    .clause-item.CRITICAL {
+      border-left: 4px solid var(--critical);
+    }
+    .clause-item.HIGH {
+      border-left: 4px solid var(--high);
+    }
+    .clause-item.MEDIUM {
+      border-left: 4px solid var(--medium);
+    }
+    .clause-item.LOW {
+      border-left: 4px solid var(--low);
+    }
+
+    .clause-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 0.75rem;
+    }
+    .clause-id {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 600;
+      font-size: 1rem;
+      color: #FFF;
+    }
+
+    .risk-badge {
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 0.25rem 0.65rem;
+      border-radius: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .badge-CRITICAL {
+      background: var(--critical-bg);
+      color: var(--critical);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+    .badge-HIGH {
+      background: var(--high-bg);
+      color: var(--high);
+      border: 1px solid rgba(249, 115, 22, 0.3);
+    }
+    .badge-MEDIUM {
+      background: var(--medium-bg);
+      color: var(--medium);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+    .badge-LOW {
+      background: var(--low-bg);
+      color: var(--low);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .clause-text-snippet {
+      font-size: 0.92rem;
+      color: var(--text-main);
+      background: var(--bg-dark);
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 0.85rem;
+      white-space: pre-wrap;
+      border: 1px solid var(--border-color);
+    }
+    .highlight-risk {
+      background: rgba(239, 68, 68, 0.25);
+      color: #FFCACA;
+      padding: 0.1rem 0.3rem;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+
+    .clause-meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+    }
+    .meta-tag {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      background: rgba(255,255,255,0.04);
+      padding: 0.25rem 0.6rem;
+      border-radius: 6px;
+    }
+    .statutory-tag {
+      background: rgba(168, 85, 247, 0.15);
+      color: #E9D5FF;
+      border: 1px solid rgba(168, 85, 247, 0.3);
+      font-weight: 500;
+    }
+
+    /* Modal / Details toggle */
+    .probs-accordion {
+      margin-top: 0.75rem;
+      font-size: 0.8rem;
+    }
+    .probs-btn {
+      background: none;
+      border: none;
+      color: var(--primary);
+      cursor: pointer;
+      font-size: 0.8rem;
+      padding: 0;
+      text-decoration: underline;
+    }
+    .probs-content {
+      display: none;
+      margin-top: 0.5rem;
+      background: var(--bg-dark);
+      padding: 0.75rem;
+      border-radius: 6px;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+    }
+    .prob-row {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    /* Export buttons */
+    .export-bar {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 1.5rem;
+      justify-content: flex-end;
+    }
+    .secondary-btn {
+      background: var(--bg-dark);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .secondary-btn:hover {
+      background: var(--bg-card-hover);
+    }
+
+    /* Spinner */
+    .spinner {
+      border: 3px solid rgba(255,255,255,0.1);
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border-left-color: #FFF;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="glow-container">
+    <div class="glow-ball-1"></div>
+    <div class="glow-ball-2"></div>
+  </div>
+
+  <header>
+    <div class="nav-wrapper">
+      <a href="#" class="brand">
+        <div class="brand-icon">
+          <i class="fa-solid => fa-scale-balanced"></i>
+        </div>
+        <div class="brand-text">
+          LegalGuard <span>NLP</span>
+        </div>
+      </a>
+
+      <div class="header-badges">
+        <div class="header-pill">
+          <div class="status-dot"></div> Legal-BERT & ACORD Engine Ready
+        </div>
+        <div class="header-pill">
+          <i class="fa-solid fa-gavel"></i> Indian Contract Act 1872 Rules Active
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="hero-banner">
+      <h1>Consumer T&C & Legal Contract Risk Intelligence</h1>
+      <p>Automated Legal-BERT Clause Classification, Financial Entity Extraction & Indian Statutory Risk Auditing</p>
+    </div>
+
+    <div class="workspace-grid">
+      
+      <!-- Left Column: Input Form -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">
+            <i class="fa-solid fa-file-contract"></i> Input Contract or T&C
+          </div>
+        </div>
+
+        <!-- Mode selector -->
+        <div class="input-methods">
+          <button class="input-tab-btn active" id="tab-text" onclick="switchInputMode('text')">
+            <i class="fa-solid fa-align-left"></i> Paste Text
+          </button>
+          <button class="input-tab-btn" id="tab-file" onclick="switchInputMode('file')">
+            <i class="fa-solid fa-file-pdf"></i> Upload PDF / File
+          </button>
+        </div>
+
+        <!-- Presets Selector -->
+        <div class="presets-wrapper">
+          <div class="presets-title">Quick Demo Samples:</div>
+          <div class="preset-pills" id="preset-container">
+            <button class="preset-btn" onclick="loadSample('saas_autorenewal')">SaaS Renewal & Non-Compete</button>
+            <button class="preset-btn" onclick="loadSample('airline_cancellation')">Airline Ticket Policy</button>
+            <button class="preset-btn" onclick="loadSample('gym_membership')">Gym Membership Penalty</button>
+            <button class="preset-btn" onclick="loadSample('ecommerce_return')">E-Commerce Refund Policy</button>
+          </div>
+        </div>
+
+        <!-- Text Input Mode -->
+        <div id="mode-text-container">
+          <textarea id="contract-text-input" class="contract-textarea" placeholder="Paste Consumer Terms & Conditions, SaaS contract, flight policy, or agreement text here..."></textarea>
+        </div>
+
+        <!-- File Upload Mode -->
+        <div id="mode-file-container" style="display: none;">
+          <div class="dropzone" id="pdf-dropzone" onclick="document.getElementById('file-input').click()">
+            <div class="dropzone-icon">
+              <i class="fa-solid fa-cloud-arrow-up"></i>
+            </div>
+            <p style="font-weight: 600; color: #FFF; margin-bottom: 0.25rem;">Click to upload or drag & drop</p>
+            <p style="font-size: 0.8rem; color: var(--text-muted);">PDF, TXT, or JSON contract files</p>
+            <input type="file" id="file-input" style="display: none;" accept=".pdf,.txt,.json" onchange="handleFileSelected(this)">
+          </div>
+          <div id="selected-file-info" style="font-size: 0.85rem; color: var(--accent-cyan); margin-bottom: 1rem; text-align: center;"></div>
+        </div>
+
+        <button class="action-btn" id="analyze-btn" onclick="runAnalysis()">
+          <i class="fa-solid fa-magnifying-glass-chart"></i> Analyze Contract Risk
+        </button>
+      </div>
+
+      <!-- Right Column: Results & Analytics -->
+      <div id="results-area">
+        
+        <!-- Placeholder before analysis -->
+        <div class="card results-placeholder" id="placeholder-view">
+          <i class="fa-solid fa-shield-halved"></i>
+          <h3 style="color: #FFF; margin-bottom: 0.5rem; font-family: 'Outfit'; font-size: 1.4rem;">No Analysis Executed Yet</h3>
+          <p>Paste a contract text on the left or select one of the Quick Demo Samples to generate the instant risk report, financial extraction table, and clause audit.</p>
+        </div>
+
+        <!-- Analysis Output Container -->
+        <div id="output-view" style="display: none;">
+          
+          <!-- Score Banner & Meter -->
+          <div class="score-banner">
+            <div class="score-circle-wrapper">
+              <svg width="140" height="140">
+                <circle cx="70" cy="70" r="55" stroke="rgba(255,255,255,0.08)" stroke-width="12" fill="none" />
+                <circle id="score-ring" cx="70" cy="70" r="55" stroke="var(--low)" stroke-width="12" fill="none"
+                        stroke-dasharray="345.57" stroke-dashoffset="345.57" stroke-linecap="round"
+                        transform="rotate(-90 70 70)" style="transition: stroke-dashoffset 1s ease, stroke 1s ease;" />
+              </svg>
+              <div class="gauge-score" id="score-val">--</div>
+              <div class="gauge-label">Health Score</div>
+            </div>
+
+            <div class="verdict-info">
+              <h3 id="verdict-title">Evaluating...</h3>
+              <p id="verdict-desc">Analysis completed by Legal-BERT & Indian Domain Engine.</p>
+
+              <div class="stats-row">
+                <div class="stat-box">
+                  <div class="stat-val" id="stat-total">0</div>
+                  <div class="stat-lbl">Clauses</div>
+                </div>
+                <div class="stat-box">
+                  <div class="stat-val" style="color: var(--critical);" id="stat-critical">0</div>
+                  <div class="stat-lbl">Critical</div>
+                </div>
+                <div class="stat-box">
+                  <div class="stat-val" style="color: var(--high);" id="stat-high">0</div>
+                  <div class="stat-lbl">High Risk</div>
+                </div>
+                <div class="stat-box">
+                  <div class="stat-val" style="color: var(--accent-cyan);" id="stat-financial">0</div>
+                  <div class="stat-lbl">Financial IE</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Top Critical/High Risk Alerts -->
+          <div class="card alerts-card" id="alerts-container-card" style="display: none;">
+            <div class="card-title" style="color: var(--critical); font-size: 1rem; margin-bottom: 0.75rem;">
+              <i class="fa-solid fa-triangle-exclamation"></i> Critical Risk Summary & Statutory Violation Alerts
+            </div>
+            <div id="alerts-list"></div>
+          </div>
+
+          <!-- Semantic Search Card -->
+          <div class="card search-card">
+            <div class="card-title" style="font-size: 1rem; margin-bottom: 0.75rem;">
+              <i class="fa-solid fa-robot"></i> ACORD Dense Vector Semantic Retrieval
+            </div>
+            <div class="search-input-wrapper">
+              <input type="text" id="search-query-input" class="search-input" placeholder="e.g. Find clauses related to cancellation fees or automatic renewal penalties...">
+              <button class="search-btn" onclick="runSemanticSearch()">Search</button>
+            </div>
+            <div id="search-results-list" style="margin-top: 1rem;"></div>
+          </div>
+
+          <!-- Financial Obligations Table Card -->
+          <div class="card" style="margin-bottom: 1.75rem;" id="financial-card">
+            <div class="card-title" style="margin-bottom: 1rem;">
+              <i class="fa-solid fa-coins"></i> Financial & Consequence Entity Extraction
+            </div>
+            <div class="financial-table-wrapper">
+              <table class="custom-table">
+                <thead>
+                  <tr>
+                    <th>Clause ID</th>
+                    <th>Extracted Amount</th>
+                    <th>Notice / Deadline</th>
+                    <th>Trigger Event</th>
+                    <th>Penalty / Consequence</th>
+                    <th>Refund Terms</th>
+                  </tr>
+                </thead>
+                <tbody id="financial-table-body">
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Clause Inspector & Filters -->
+          <div class="card">
+            <div class="card-header" style="margin-bottom: 1rem;">
+              <div class="card-title">
+                <i class="fa-solid fa-list-check"></i> Detailed Clause Audit Inspector
+              </div>
+            </div>
+
+            <div class="filter-bar">
+              <div class="filter-btn-group">
+                <button class="filter-btn active" onclick="filterClauses('ALL', this)">All</button>
+                <button class="filter-btn" onclick="filterClauses('CRITICAL', this)">Critical</button>
+                <button class="filter-btn" onclick="filterClauses('HIGH', this)">High Risk</button>
+                <button class="filter-btn" onclick="filterClauses('MEDIUM', this)">Medium</button>
+                <button class="filter-btn" onclick="filterClauses('LOW', this)">Low</button>
+              </div>
+
+              <div style="font-size: 0.85rem; color: var(--text-muted);" id="clause-counter-lbl">
+                Showing 0 clauses
+              </div>
+            </div>
+
+            <!-- Clauses Container -->
+            <div id="clauses-list-container"></div>
+
+            <div class="export-bar">
+              <button class="secondary-btn" onclick="exportAnalysisJSON()">
+                <i class="fa-solid fa-download"></i> Export JSON
+              </button>
+              <button class="secondary-btn" onclick="window.print()">
+                <i class="fa-solid fa-print"></i> Print Report
+              </button>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <script>
+    let currentAnalysisData = null;
+    let selectedFile = null;
+
+    function switchInputMode(mode) {
+      document.getElementById('tab-text').classList.toggle('active', mode === 'text');
+      document.getElementById('tab-file').classList.toggle('active', mode === 'file');
+      
+      document.getElementById('mode-text-container').style.display = mode === 'text' ? 'block' : 'none';
+      document.getElementById('mode-file-container').style.display = mode === 'file' ? 'block' : 'none';
+    }
+
+    async function loadSample(sampleKey) {
+      switchInputMode('text');
+      try {
+        const res = await fetch('/api/samples');
+        const data = await res.json();
+        if (data.samples && data.samples[sampleKey]) {
+          document.getElementById('contract-text-input').value = data.samples[sampleKey].text;
+          runAnalysis();
+        }
+      } catch (err) {
+        console.error("Failed to load sample:", err);
+      }
+    }
+
+    function handleFileSelected(input) {
+      if (input.files && input.files[0]) {
+        selectedFile = input.files[0];
+        document.getElementById('selected-file-info').innerText = `Selected File: ${selectedFile.name} (${(selectedFile.size / 1024).toFixed(1)} KB)`;
+      }
+    }
+
+    async function runAnalysis() {
+      const btn = document.getElementById('analyze-btn');
+      btn.disabled = true;
+      btn.innerHTML = `<div class="spinner"></div> Running Legal-BERT Analysis...`;
+
+      let formData = new FormData();
+      const textMode = document.getElementById('tab-text').classList.contains('active');
+
+      let reqOptions = {};
+      if (textMode) {
+        const text = document.getElementById('contract-text-input').value.trim();
+        if (!text) {
+          alert("Please enter or paste contract text to analyze.");
+          btn.disabled = false;
+          btn.innerHTML = `<i class="fa-solid fa-magnifying-glass-chart"></i> Analyze Contract Risk`;
+          return;
+        }
+        reqOptions = {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text: text })
+        };
+      } else {
+        if (!selectedFile) {
+          alert("Please select a PDF or text file first.");
+          btn.disabled = false;
+          btn.innerHTML = `<i class="fa-solid fa-magnifying-glass-chart"></i> Analyze Contract Risk`;
+          return;
+        }
+        formData.append('file', selectedFile);
+        reqOptions = {
+          method: 'POST',
+          body: formData
+        };
+      }
+
+      try {
+        const response = await fetch('/api/analyze', reqOptions);
+        const data = await response.json();
+
+        if (data.error) {
+          alert(`Analysis Error: ${data.error}`);
+        } else {
+          currentAnalysisData = data;
+          renderResults(data);
+        }
+      } catch (err) {
+        console.error(err);
+        alert("Failed to communicate with server. Please ensure web server is running.");
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = `<i class="fa-solid fa-magnifying-glass-chart"></i> Analyze Contract Risk`;
+      }
+    }
+
+    function renderResults(data) {
+      document.getElementById('placeholder-view').style.display = 'none';
+      document.getElementById('output-view').style.display = 'block';
+
+      // 1. Health Score Gauge
+      const score = data.contract_health_score;
+      document.getElementById('score-val').innerText = score;
+      
+      const ring = document.getElementById('score-ring');
+      const circumference = 2 * Math.PI * 55; // 345.57
+      const offset = circumference - (score / 100) * circumference;
+      ring.style.strokeDashoffset = offset;
+
+      let scoreColor = 'var(--low)';
+      if (score < 40) scoreColor = 'var(--critical)';
+      else if (score < 70) scoreColor = 'var(--high)';
+      else if (score < 85) scoreColor = 'var(--medium)';
+      ring.style.stroke = scoreColor;
+      document.getElementById('score-val').style.color = scoreColor;
+
+      document.getElementById('verdict-title').innerText = data.overall_verdict;
+      document.getElementById('verdict-desc').innerText = `Analyzed ${data.stats.total_clauses} clauses. Risk index computed under Indian Law & Legal-BERT classification.`;
+
+      // Stats
+      document.getElementById('stat-total').innerText = data.stats.total_clauses;
+      document.getElementById('stat-critical').innerText = data.stats.critical_risk_count;
+      document.getElementById('stat-high').innerText = data.stats.high_risk_count;
+      document.getElementById('stat-financial').innerText = data.stats.financial_entities_found;
+
+      // Alerts
+      const alertsCard = document.getElementById('alerts-container-card');
+      const alertsList = document.getElementById('alerts-list');
+      alertsList.innerHTML = '';
+      if (data.top_alerts && data.top_alerts.length > 0) {
+        alertsCard.style.display = 'block';
+        data.top_alerts.forEach(alertText => {
+          alertsList.innerHTML += `
+            <div class="alert-item">
+              <i class="fa-solid fa-triangle-exclamation"></i>
+              <div>${escapeHtml(alertText)}</div>
+            </div>
+          `;
+        });
+      } else {
+        alertsCard.style.display = 'none';
+      }
+
+      // Financial IE Table
+      const finTbody = document.getElementById('financial-table-body');
+      finTbody.innerHTML = '';
+      if (data.financial_obligations && data.financial_obligations.length > 0) {
+        document.getElementById('financial-card').style.display = 'block';
+        data.financial_obligations.forEach(item => {
+          finTbody.innerHTML += `
+            <tr>
+              <td><strong>${item.clause_id}</strong></td>
+              <td><span style="color: var(--accent-cyan); font-weight: 700;">${item.currency} ${item.amount}</span></td>
+              <td>${item.deadline !== 'N/A' ? item.deadline : '-'}</td>
+              <td>${item.trigger !== 'N/A' ? escapeHtml(item.trigger) : '-'}</td>
+              <td>${item.consequence !== 'N/A' ? escapeHtml(item.consequence) : '-'}</td>
+              <td>${item.refund_condition !== 'N/A' ? `<span style="color: var(--high); font-weight: 600;">${escapeHtml(item.refund_condition)}</span>` : '-'}</td>
+            </tr>
+          `;
+        });
+      } else {
+        finTbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-dim);">No financial amounts or penalties extracted in this document.</td></tr>`;
+      }
+
+      // Render Clauses
+      renderClausesList('ALL');
+    }
+
+    function renderClausesList(filterLevel) {
+      if (!currentAnalysisData || !currentAnalysisData.clauses) return;
+
+      const container = document.getElementById('clauses-list-container');
+      container.innerHTML = '';
+
+      const filtered = currentAnalysisData.clauses.filter(c => {
+        if (filterLevel === 'ALL') return true;
+        return c.risk.risk_level === filterLevel;
+      });
+
+      document.getElementById('clause-counter-lbl').innerText = `Showing ${filtered.length} of ${currentAnalysisData.clauses.length} clauses`;
+
+      if (filtered.length === 0) {
+        container.innerHTML = `<div style="text-align: center; padding: 2rem; color: var(--text-dim);">No clauses match the selected risk filter.</div>`;
+        return;
+      }
+
+      filtered.forEach((c, idx) => {
+        let textHighlighted = escapeHtml(c.text);
+        if (c.risk.highlight_phrases) {
+          c.risk.highlight_phrases.forEach(phrase => {
+            if (phrase && phrase.length > 2) {
+              const regex = new RegExp(`(${escapeRegExp(phrase)})`, 'gi');
+              textHighlighted = textHighlighted.replace(regex, `<span class="highlight-risk">$1</span>`);
+            }
+          });
+        }
+
+        const statutoryHtml = c.risk.statutory_reference !== 'N/A' 
+          ? `<div class="meta-tag statutory-tag"><i class="fa-solid fa-gavel"></i> ${escapeHtml(c.risk.statutory_reference)}</div>` 
+          : '';
+
+        const probsId = `probs-${idx}`;
+        let probsHtml = '';
+        if (c.classification.legal_bert_probabilities) {
+          probsHtml = `<div class="probs-content" id="${probsId}">`;
+          for (const [k, v] of Object.entries(c.classification.legal_bert_probabilities)) {
+            probsHtml += `
+              <div class="prob-row">
+                <span>${escapeHtml(k)}</span>
+                <span style="font-weight: 600; color: var(--accent-cyan);">${(v * 100).toFixed(1)}%</span>
+              </div>
+            `;
+          }
+          probsHtml += `</div>`;
+        }
+
+        container.innerHTML += `
+          <div class="clause-item ${c.risk.risk_level}">
+            <div class="clause-header">
+              <div class="clause-id">${c.clause_id} - ${escapeHtml(c.title)}</div>
+              <div class="risk-badge badge-${c.risk.risk_level}">
+                ${c.risk.risk_level} (${c.risk.risk_score}/100)
+              </div>
+            </div>
+
+            <div class="clause-text-snippet">${textHighlighted}</div>
+
+            <div class="clause-meta-row">
+              <div class="meta-tag"><i class="fa-solid fa-brain"></i> Category: <strong>${escapeHtml(c.classification.unified_category)}</strong> (BERT: ${(c.classification.legal_bert_confidence * 100).toFixed(0)}%)</div>
+              <div class="meta-tag"><i class="fa-solid fa-calculator"></i> TF-IDF Baseline: <strong>${escapeHtml(c.classification.tfidf_category)}</strong></div>
+              ${statutoryHtml}
+            </div>
+
+            <div style="margin-top: 0.75rem; font-size: 0.88rem; color: #FCA5A5;">
+              <i class="fa-solid fa-circle-info"></i> ${escapeHtml(c.risk.risk_reasons.join(" | "))}
+            </div>
+
+            <div class="probs-accordion">
+              <button class="probs-btn" onclick="toggleProbs('${probsId}')">Show BERT Class Probabilities</button>
+              ${probsHtml}
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    function toggleProbs(id) {
+      const el = document.getElementById(id);
+      if (el) {
+        el.style.display = el.style.display === 'grid' ? 'none' : 'grid';
+      }
+    }
+
+    function filterClauses(level, btn) {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderClausesList(level);
+    }
+
+    async function runSemanticSearch() {
+      const query = document.getElementById('search-query-input').value.trim();
+      if (!query) return;
+
+      const targetList = currentAnalysisData ? currentAnalysisData.clauses : [];
+
+      try {
+        const res = await fetch('/api/search', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            query: query,
+            clauses: targetList
+          })
+        });
+        const data = await res.json();
+        
+        const listDiv = document.getElementById('search-results-list');
+        listDiv.innerHTML = '';
+
+        if (data.results && data.results.length > 0) {
+          data.results.forEach(r => {
+            listDiv.innerHTML += `
+              <div style="background: var(--bg-dark); border: 1px solid var(--border-color); padding: 0.75rem; border-radius: 8px; margin-bottom: 0.5rem; font-size: 0.85rem;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.3rem;">
+                  <strong style="color: var(--accent-cyan);">${escapeHtml(r.title)}</strong>
+                  <span style="color: var(--low); font-weight: 700;">Similarity: ${(r.score * 100).toFixed(1)}%</span>
+                </div>
+                <div style="color: var(--text-muted);">${escapeHtml(r.text.substring(0, 200))}...</div>
+              </div>
+            `;
+          });
+        } else {
+          listDiv.innerHTML = `<div style="font-size: 0.85rem; color: var(--text-dim);">No relevant clauses found matching query.</div>`;
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    function exportAnalysisJSON() {
+      if (!currentAnalysisData) return;
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(currentAnalysisData, null, 2));
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", "contract_risk_analysis_report.json");
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function escapeRegExp(string) {
+      return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    }
+  </script>
+</body>
+</html>

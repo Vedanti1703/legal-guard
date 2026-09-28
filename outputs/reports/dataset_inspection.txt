@@ -1,0 +1,217 @@
+================================================================================
+BTECH NLP PROJECT: DATASET INSPECTION & RECONNAISSANCE REPORT
+Project: NLP for Detecting Hidden Fees and Unfavorable Terms in Consumer T&Cs
+Generated: 2026-09-28 22:00:09
+================================================================================
+
+
+
+================================================================================
+CUAD DATASET INSPECTION REPORT
+================================================================================
+Total Contracts: 510
+Unique Titles: 510
+Duplicate Contract Titles: 0
+Duplicate Contract Texts (exact MD5 hash match): 1
+Total Annotations (Positive Clause Answers): 13823
+Unique Annotated Clauses: 11683
+Duplicate Clause Instances: 2140
+Total Categories Identified: 41
+
+--- CONTRACT LENGTH STATISTICS ---
+Chars: Min = 645, Mean = 52563.01, Median = 33143.0, Max = 338211
+Words: Min = 109, Mean = 7861.19, Median = 5006.0, Max = 47733
+
+--- CLAUSE LENGTH STATISTICS ---
+Chars: Min = 1, Mean = 262.02, Median = 196.0, Max = 3884
+Words: Min = 1, Mean = 40.68, Median = 31.0, Max = 479
+
+--- TARGET CONSUMER-RISK CATEGORIES VERIFICATION ---
+[FOUND] Renewal Term                          :   210 annotations (in CUAD as 'Renewal Term')
+[FOUND] Notice Period to Terminate Renewal    :   122 annotations (in CUAD as 'Notice Period To Terminate Renewal')
+[FOUND] Termination for Convenience           :   246 annotations (in CUAD as 'Termination For Convenience')
+[FOUND] Liquidated Damages                    :   121 annotations (in CUAD as 'Liquidated Damages')
+[FOUND] Post-Termination Services             :   450 annotations (in CUAD as 'Post-Termination Services')
+[FOUND] Revenue/Profit Sharing                :   418 annotations (in CUAD as 'Revenue/Profit Sharing')
+
+--- ALL 41 CUAD CATEGORIES (Ranked by Annotation Count) ---
+ 1. Parties                                :  2554 examples
+ 2. License Grant                          :   777 examples
+ 3. Cap On Liability                       :   672 examples
+ 4. Anti-Assignment                        :   654 examples
+ 5. Audit Rights                           :   643 examples
+ 6. Insurance                              :   560 examples
+ 7. Document Name                          :   521 examples
+ 8. Agreement Date                         :   476 examples
+ 9. Expiration Date                        :   467 examples
+10. Governing Law                          :   464 examples
+11. Post-Termination Services              :   450 examples
+12. Effective Date                         :   447 examples
+13. Minimum Commitment                     :   424 examples
+14. Revenue/Profit Sharing                 :   418 examples
+15. Exclusivity                            :   410 examples
+16. Rofr/Rofo/Rofn                         :   367 examples
+17. Ip Ownership Assignment                :   318 examples
+18. Non-Transferable License               :   298 examples
+19. Non-Compete                            :   259 examples
+20. Change Of Control                      :   253 examples
+21. Termination For Convenience            :   246 examples
+22. Renewal Term                           :   210 examples
+23. Warranty Duration                      :   176 examples
+24. Covenant Not To Sue                    :   173 examples
+25. Volume Restriction                     :   171 examples
+26. Uncapped Liability                     :   167 examples
+27. Irrevocable Or Perpetual License       :   165 examples
+28. Competitive Restriction Exception      :   125 examples
+29. Notice Period To Terminate Renewal     :   122 examples
+30. Liquidated Damages                     :   121 examples
+31. Affiliate License-Licensee             :   115 examples
+32. Joint Ip Ownership                     :   115 examples
+33. No-Solicit Of Employees                :    91 examples
+34. Affiliate License-Licensor             :    69 examples
+35. Source Code Escrow                     :    66 examples
+36. Non-Disparagement                      :    65 examples
+37. No-Solicit Of Customers                :    58 examples
+38. Third Party Beneficiary                :    39 examples
+39. Most Favored Nation                    :    38 examples
+40. Unlimited/All-You-Can-Eat-License      :    32 examples
+41. Price Restrictions                     :    27 examples
+================================================================================
+
+
+
+================================================================================
+ACORD DATASET INSPECTION REPORT
+================================================================================
+Total Unique Queries: 114
+Query Fields: ['_id', 'metadata', 'text']
+Total Corpus Clauses: 3931
+Corpus Fields: ['_id', 'text']
+Total Query-Clause Pairs Across Splits: 126659
+
+--- OVERALL RATING DISTRIBUTION ---
+  Rating 0: 123168 pairs (97.24%)
+  Rating 1:   2295 pairs ( 1.81%)
+  Rating 2:    403 pairs ( 0.32%)
+  Rating 3:    663 pairs ( 0.52%)
+  Rating 4:    130 pairs ( 0.10%)
+
+--- SPLIT DETAILS ---
+Split: TEST (test.tsv)
+  Pairs: 61988
+  Unique Queries: 57
+  Unique Clauses: 2365
+  Ratings: {0: 60231, 1: 1137, 2: 219, 3: 348, 4: 53}
+Split: TRAIN (train.tsv)
+  Pairs: 58529
+  Unique Queries: 51
+  Unique Clauses: 2227
+  Ratings: {0: 56973, 1: 1036, 2: 159, 3: 287, 4: 74}
+Split: VALID (valid.tsv)
+  Pairs: 6142
+  Unique Queries: 6
+  Unique Clauses: 1792
+  Ratings: {0: 5964, 1: 122, 2: 25, 3: 28, 4: 3}
+
+--- CORPUS CLAUSE LENGTH STATISTICS ---
+Chars: Min = 3, Mean = 1110.75, Median = 685.0, Max = 15308
+Words: Min = 1, Mean = 173.7, Median = 108.0, Max = 2566
+
+--- TOP QUERY CATEGORIES (Metadata) ---
+  Limitation of Liability             : 63 queries
+  Indemnification                     : 24 queries
+  Restrictive Covenants               : 10 queries
+  Governing Law                       : 4 queries
+  Affirmative Covenants               : 4 queries
+  IP Ownership/License                : 4 queries
+  Term                                : 3 queries
+  Liquidated Damages                  : 1 queries
+  third party beneficiary clause      : 1 queries
+
+--- SAMPLE QUERIES ---
+  ID: New York Governing Law | Text: "New York Governing Law" | Category: Governing Law
+  ID: England Governing Law | Text: "England Governing Law" | Category: Governing Law
+  ID: Clause with multiple governing laws | Text: "Clause with multiple governing laws" | Category: Governing Law
+================================================================================
+
+
+
+================================================================================
+INDIAN LEGAL DATASET INSPECTION REPORT
+================================================================================
+Total Files Found: 5 (PDFs: 5)
+Total Pages Across PDFs: 136
+Pages with Usable Text: 136 (100.0%)
+Duplicate Documents (Exact Text Hash): 0
+
+--- DETAILED PER-FILE BREAKDOWN ---
+File: Clause%20Type.pdf
+  Type Classification: clause_examples_good_vs_bad
+  Pages: 9 (Text extracted: 9/9 = 100.0%)
+  Volume: 1124 words (8553 chars)
+  Legal Markers / Potential Clause Headings: 24
+  Sample: "================================================================ LEGALEAGLE - CLAUSE EXAMPLES: GOOD VS BAD Indian Contract Law Reference | For RAG Knowledge Base ==================..."
+
+File: Indian%20Contract%20Act%201872%28ENG%29.pdf
+  Type Classification: statutory_code_english_full
+  Pages: 53 (Text extracted: 53/53 = 100.0%)
+  Volume: 30666 words (173507 chars)
+  Legal Markers / Potential Clause Headings: 849
+  Sample: "1  THE INDIAN CONTRACT ACT, 1872 ____________ ARRANGEMENT OF SECTIONS ____________ SECTIONS PREAMBLE  PRELIMINARY 1. Short title. Extent. Commencement. Saving. 2. Interpretation-cl..."
+
+File: Indian%20Contract%20Act%201872%28hindi%29.pdf
+  Type Classification: statutory_code_hindi
+  Pages: 41 (Text extracted: 41/41 = 100.0%)
+  Volume: 34118 words (153910 chars)
+  Legal Markers / Potential Clause Headings: 219
+  Sample: "भारतीय संविदा अविवियम, 1872 (1872 का अविवियम संख यांक 9)1 [25 अप्रैल, 1872] उद्देविका--संविदाओं से संबंवित विवि के कवतपय भागों को पररभावित और संिोवित करिा समीचीि है; अत: तद द्वारा ..."
+
+File: Indian%20Contract%20Act%201872.pdf
+  Type Classification: statutory_code_english_selected
+  Pages: 11 (Text extracted: 11/11 = 100.0%)
+  Volume: 3561 words (19145 chars)
+  Legal Markers / Potential Clause Headings: 47
+  Sample: "Indian Contract Act 1872 Section 10 What agreements are contracts. All agreements are contracts if they are made by the free consent of parties competent to contract, for a lawful ..."
+
+File: Risky%20Patterns%20clause.pdf
+  Type Classification: risky_clause_patterns_and_rules
+  Pages: 22 (Text extracted: 22/22 = 100.0%)
+  Volume: 3792 words (28469 chars)
+  Legal Markers / Potential Clause Headings: 81
+  Sample: "============================================================================= LEGALEAGLE -- RISKY CLAUSE PATTERNS Indian Contract Law Risk Reference Last Updated: 2025 ============..."
+
+--- NATURE OF THE INDIAN DATASET ---
+Analysis of content shows the Indian dataset contains:
+1. Statutory provisions: Indian Contract Act 1872 (Full English, Hindi, and Selected English provisions)
+2. Curated Clause Reference: Good vs Bad contract clauses under Indian law with explanations
+3. Risky Clause Patterns: High-risk clause definitions, court precedent references, and sample clauses
+Note: It does NOT contain thousands of annotated SEC contracts like CUAD.
+It provides domain-specific Indian contract law ground truth and risky pattern rules.
+================================================================================
+
+
+
+================================================================================
+ARCHITECTURAL SYNTHESIS: PURPOSE & PIPELINE ROLE FOR EACH DATASET
+================================================================================
+1. CUAD (Contract Understanding Atticus Dataset):
+   - Primary Task: Legal Clause Understanding & Multi-Class Classification.
+   - 510 contracts, 13,823 labeled spans across 41 categories.
+   - Includes target consumer-risk categories: Renewal Term (210), Notice Period (122),
+     Termination For Convenience (246), Liquidated Damages (121), Post-Termination Services (450),
+     and Revenue/Profit Sharing (418).
+   - Crucial constraint: Split must be strictly document-level (contract ID based) to avoid leakage.
+
+2. ACORD (Atticus Clause Retrieval Dataset):
+   - Primary Task: Semantic Retrieval and Ranking.
+   - Structure: 114 queries, 3,931 corpus clauses, 126,659 graded pairs (0 to 4 rating).
+   - Evaluation: Recall@1, Recall@5, Recall@10, and Mean Reciprocal Rank (MRR).
+   - Not a classification dataset; tests semantic search for consumer clauses.
+
+3. Indian Legal Dataset:
+   - Primary Task: Domain Adaptation, Risky Pattern Rule Extraction, and Statutory Grounding.
+   - Structure: 5 PDF files (136 pages, 100% text extraction success).
+   - Contains: Indian Contract Act 1872 statutory text + 12 categories of risky contract patterns
+     and curated Good vs. Bad Indian contract clauses.
+   - Provides legal grounding under Indian jurisprudence (e.g. Sec 27 voiding non-competes).
+================================================================================
