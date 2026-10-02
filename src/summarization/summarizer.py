@@ -53,15 +53,12 @@ def get_abstractive_model():
     global _ABSTRACTIVE_PIPELINE
     if _ABSTRACTIVE_PIPELINE is None:
         try:
-            from transformers import pipeline
-            # Use google/flan-t5-base or distilbart for fast CPU inference
+            from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, pipeline
             model_id = "google/flan-t5-base"
-            logger.info(f"Initializing abstractive summarization pipeline ({model_id})...")
-            _ABSTRACTIVE_PIPELINE = pipeline(
-                "text2text-generation",
-                model=model_id,
-                device=-1  # CPU
-            )
+            logger.info(f"Initializing abstractive summarization model ({model_id})...")
+            tok = AutoTokenizer.from_pretrained(model_id)
+            mdl = AutoModelForSeq2SeqLM.from_pretrained(model_id)
+            _ABSTRACTIVE_PIPELINE = {"tokenizer": tok, "model": mdl}
         except Exception as e:
             logger.warning(f"Could not load abstractive pipeline: {e}. Falling back to extractive mode.")
             _ABSTRACTIVE_PIPELINE = False

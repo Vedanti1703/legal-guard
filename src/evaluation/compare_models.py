@@ -355,8 +355,15 @@ def run_comparative_analysis():
 
         if seed_dirs:
             for sdir in seed_dirs:
-                res = evaluate_model_on_test(mk, sdir, texts, labels, id2label)
-                model_evaluations[mk].append(res)
+                has_weights = any(sdir.glob("*.safetensors")) or any(sdir.glob("*.bin")) or any(sdir.glob("*.joblib"))
+                if not has_weights:
+                    logger.info(f"Skipping incomplete checkpoint directory (no weights): {sdir}")
+                    continue
+                try:
+                    res = evaluate_model_on_test(mk, sdir, texts, labels, id2label)
+                    model_evaluations[mk].append(res)
+                except Exception as e:
+                    logger.warning(f"Could not evaluate {sdir}: {e}")
         else:
             # Fallback to direct model path
             fallback_dir = mk_dir
@@ -365,9 +372,13 @@ def run_comparative_analysis():
             elif mk == "tfidf" and (models_dir / "tfidf_baseline.joblib").exists():
                 fallback_dir = models_dir
 
-            if fallback_dir.exists():
-                res = evaluate_model_on_test(mk, fallback_dir, texts, labels, id2label)
-                model_evaluations[mk].append(res)
+            has_weights = any(fallback_dir.glob("*.safetensors")) or any(fallback_dir.glob("*.bin")) or any(fallback_dir.glob("*.joblib"))
+            if fallback_dir.exists() and has_weights:
+                try:
+                    res = evaluate_model_on_test(mk, fallback_dir, texts, labels, id2label)
+                    model_evaluations[mk].append(res)
+                except Exception as e:
+                    logger.warning(f"Could not evaluate {fallback_dir}: {e}")
 
     # Compute mean ± std across seeds
     model_summaries = {}

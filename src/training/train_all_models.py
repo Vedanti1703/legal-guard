@@ -396,7 +396,7 @@ def train_transformer(
         elif hasattr(model, "roberta") and hasattr(model.roberta, "embeddings"):
             for p in model.roberta.embeddings.parameters():
                 p.requires_grad = False
-
+    model.float()
     model.to(device)
 
     # 3. Class-weighted Loss
@@ -467,6 +467,7 @@ def train_transformer(
 
     # 4. Held-out Test Evaluation
     best_model = AutoModelForSequenceClassification.from_pretrained(out_dir)
+    best_model.float()
     best_model.to(device)
     best_model.eval()
 
@@ -515,7 +516,7 @@ def train_transformer(
         "latency_ms_per_clause": latency_ms,
         "best_val_macro_f1": best_val_f1
     }
-    save_json(config_info, out_dir / "config.json")
+    save_json(config_info, out_dir / "model_meta.json")
 
     return {
         "model_name": model_key,

@@ -59,6 +59,7 @@ data/final/
 *.csv
 *.jsonl
 *.parquet
+!outputs/reports/*.csv
 !requirements.txt
 
 # ---- API keys / secrets / env ----
