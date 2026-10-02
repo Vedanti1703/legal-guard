@@ -1,0 +1,137 @@
+{
+  "version": "1.0",
+  "description": "Configurable risk keywords and regex patterns for Stage 2 gating and consumer risk scoring",
+  "categories": {
+    "auto_renewal": {
+      "name": "Auto-Renewal & Recurring Billing",
+      "severity_weight": 0.85,
+      "default_level": "HIGH",
+      "patterns": [
+        "\\bautomatically\\s+renew(?:s|ed|ing)?\\b",
+        "\\bauto-renew(?:s|ed|al)?\\b",
+        "\\bauto\\s+renew(?:s|ed|al)?\\b",
+        "\\bunless\\s+cancelled\\b",
+        "\\bunless\\s+terminated\\b",
+        "\\brecurring\\s+(?:charge|fee|billing|subscription)\\b",
+        "\\bevergreen\\s+clause\\b",
+        "\\bsubsequent\\s+renewal\\s+term\\b",
+        "\\bautomatic(?:ally)?\\s+extended\\b"
+      ],
+      "reason": "Automatic renewal term without affirmative consent or explicit prior billing notice.",
+      "suggested_action": "Require affirmative opt-in and ensure cancellation can be executed within 48 hours without penalty."
+    },
+    "penalty_fees": {
+      "name": "Penalties, Liquidated Damages & Hidden Charges",
+      "severity_weight": 0.90,
+      "default_level": "HIGH",
+      "patterns": [
+        "\\bliquidated\\s+damages\\b",
+        "\\bearly\\s+termination\\s+fee\\b",
+        "\\bcancellation\\s+fee\\b",
+        "\\bprocessing\\s+fee\\b",
+        "\\bpenalty\\b",
+        "\\bforfeit(?:ure|s|ed)?\\b",
+        "\\bnon-refundable\\b",
+        "\\bno\\s+refund(?:s)?\\b",
+        "\\bno\\s+cash\\s+refund\\b",
+        "\\blate\\s+fee\\b",
+        "\\badministrative\\s+(?:charge|fee)\\b",
+        "\\brestocking\\s+fee\\b"
+      ],
+      "reason": "Imposes pre-fixed damages, cancellation penalties, or non-refundable forfeiture.",
+      "suggested_action": "Verify under Section 74 Indian Contract Act: penalties exceeding reasonable loss are void/unenforceable."
+    },
+    "unilateral_change": {
+      "name": "Unilateral Contract & Price Modifications",
+      "severity_weight": 0.85,
+      "default_level": "HIGH",
+      "patterns": [
+        "\\bsole\\s+discretion\\b",
+        "\\bmodify\\s+at\\s+any\\s+time\\b",
+        "\\bwithout\\s+(?:prior\\s+)?notice\\b",
+        "\\breserves?\\s+the\\s+right\\s+to\\s+(?:amend|change|modify|alter|update)\\b",
+        "\\bchange\\s+prices\\b",
+        "\\bat\\s+its\\s+sole\\s+option\\b",
+        "\\bwithout\\s+consumer\\s+consent\\b"
+      ],
+      "reason": "Permits service provider to unilaterally modify pricing, features, or obligations without notice.",
+      "suggested_action": "Require a minimum 30-day notice and right to terminate without penalty upon material changes."
+    },
+    "liability_limitation": {
+      "name": "Liability Exemption & Cap",
+      "severity_weight": 0.75,
+      "default_level": "MEDIUM",
+      "patterns": [
+        "\\bnot\\s+liable\\b",
+        "\\blimitation\\s+of\\s+liability\\b",
+        "\\bshall\\s+not\\s+exceed\\b",
+        "\\bcap\\s+on\\s+liability\\b",
+        "\\bwaive(?:s|d)?\\s+liability\\b",
+        "\\bindemnif(?:y|ication|ied)\\b",
+        "\\bhold\\s+harmless\\b",
+        "\\bas\\s+is\\s+without\\s+warranty\\b",
+        "\\bdisclaim(?:s|ed)?\\s+all\\s+liabilit(?:y|ies)\\b"
+      ],
+      "reason": "Restricts customer remedies or disclaims vendor liability for standard negligence or breach.",
+      "suggested_action": "Ensure liability cannot be excluded for statutory product/service defects under Consumer Protection Act 2019."
+    },
+    "legal_recourse": {
+      "name": "Restriction on Legal Proceedings & Jurisdiction",
+      "severity_weight": 0.95,
+      "default_level": "HIGH",
+      "patterns": [
+        "\\bexclusive\\s+jurisdiction\\b",
+        "\\bbinding\\s+arbitration\\b",
+        "\\bwaive\\s+(?:the\\s+)?right\\s+to\\s+court\\b",
+        "\\bcannot\\s+sue\\b",
+        "\\bclass\\s+action\\s+waiver\\b",
+        "\\bunilateral\\s+arbitration\\b",
+        "\\bwaive\\s+(?:any\\s+)?jury\\s+trial\\b",
+        "\\bforeign\\s+jurisdiction\\b"
+      ],
+      "reason": "Deprives consumer of jurisdiction in local consumer forums or forces binding unilateral dispute venues.",
+      "suggested_action": "Section 28 Indian Contract Act voids agreements restricting legal proceedings. Consumer forum rights cannot be waived."
+    },
+    "restraint": {
+      "name": "Restraint of Trade & Non-Compete",
+      "severity_weight": 1.0,
+      "default_level": "CRITICAL",
+      "patterns": [
+        "\\bnon-compete\\b",
+        "\\bshall\\s+not\\s+engage\\b",
+        "\\brestraint\\s+of\\s+trade\\b",
+        "\\bprohibited\\s+from\\s+working\\b",
+        "\\bcompeting\\s+business\\b",
+        "\\brestrictive\\s+covenant\\b"
+      ],
+      "reason": "Restricts trade, profession, or lawful business. Strictly void under Section 27 of ICA 1872.",
+      "suggested_action": "Remove post-termination trade restrictions entirely as they are void ab initio under Indian law."
+    },
+    "short_notice": {
+      "name": "Unfair Short Notice Window",
+      "severity_weight": 0.70,
+      "default_level": "MEDIUM",
+      "patterns": [
+        "\\b24\\s+hours?\\b",
+        "\\b48\\s+hours?\\b",
+        "\\bwritten\\s+notice\\b",
+        "\\b30\\s+days?\\s+prior\\s+notice\\b",
+        "\\bimmediate\\s+termination\\b",
+        "\\bwithout\\s+advance\\s+warning\\b"
+      ],
+      "reason": "Imposes overly narrow time window for consumer response, cancellation, or dispute.",
+      "suggested_action": "Provide reasonable notice periods (at least 15-30 days) for consumer action."
+    },
+    "money_signals": {
+      "name": "Financial Charges & Penalties Near Monetary Values",
+      "severity_weight": 0.80,
+      "default_level": "HIGH",
+      "patterns": [
+        "(?:₹|rs\\.?|inr|\\$|usd)\\s*\\d+(?:,\\d{3})*(?:\\.\\d{2})?",
+        "\\d+(?:,\\d{3})*(?:\\.\\d{2})?\\s*(?:rupees|inr|usd|dollars)"
+      ],
+      "reason": "Explicit monetary charges, fines, or fees linked directly to consumer liability.",
+      "suggested_action": "Scrutinize exact monetary obligations against the advertised service cost."
+    }
+  }
+}
