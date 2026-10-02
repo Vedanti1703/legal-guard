@@ -40,6 +40,7 @@ runs/
 *.model
 *_model/
 saved_model/
+outputs/models/
 
 # ---- Hugging Face / Torch caches ----
 .cache/
