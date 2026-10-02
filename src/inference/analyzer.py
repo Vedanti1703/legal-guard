@@ -118,14 +118,26 @@ def get_models() -> Dict[str, Any]:
 
     # 3. Load DeBERTa / General Transformer
     deberta_dir = models_dir / "deberta"
-    if deberta_dir.exists() and (deberta_dir / "config.json").exists():
+    target_deb_dir = None
+    if deberta_dir.exists():
+        if (deberta_dir / "config.json").exists() and (deberta_dir / "model.safetensors").exists():
+            target_deb_dir = deberta_dir
+        else:
+            seed_dirs = sorted(list(deberta_dir.glob("seed_*")))
+            for sdir in seed_dirs:
+                if (sdir / "config.json").exists() and (sdir / "model.safetensors").exists():
+                    target_deb_dir = sdir
+                    break
+
+    if target_deb_dir:
         try:
-            deb_tok = AutoTokenizer.from_pretrained(deberta_dir)
-            deb_model = AutoModelForSequenceClassification.from_pretrained(deberta_dir)
+            deb_tok = AutoTokenizer.from_pretrained(target_deb_dir)
+            deb_model = AutoModelForSequenceClassification.from_pretrained(target_deb_dir)
+            deb_model.float()
             deb_model.eval()
             _MODELS_CACHE["deberta_tokenizer"] = deb_tok
             _MODELS_CACHE["deberta_model"] = deb_model
-            logger.info("Loaded DeBERTa-v3 general transformer model.")
+            logger.info(f"Loaded DeBERTa-v3 general transformer model from {target_deb_dir}.")
         except Exception as e:
             logger.warning(f"Could not load DeBERTa checkpoint: {e}")
             _MODELS_CACHE["deberta_model"] = None
