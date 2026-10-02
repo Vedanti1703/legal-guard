@@ -1011,8 +1011,27 @@
             </div>
           </div>
 
-          <div style="margin-bottom: 1rem;">
+          <div class="input-methods" style="margin-bottom: 0.8rem;">
+            <button class="input-tab-btn active" id="summary-tab-text" onclick="switchSummaryInputMode('text')">
+              <i class="fa-solid fa-align-left"></i> Paste Text
+            </button>
+            <button class="input-tab-btn" id="summary-tab-file" onclick="switchSummaryInputMode('file')">
+              <i class="fa-solid fa-file-pdf"></i> Upload PDF / File
+            </button>
+          </div>
+
+          <div id="summary-mode-text-container" style="margin-bottom: 1rem;">
             <textarea id="summary-text-input" class="contract-textarea" style="height: 240px;" placeholder="Paste entire contract, SaaS agreement, or airline ticket terms here to generate comprehensive summary..."></textarea>
+          </div>
+
+          <div id="summary-mode-file-container" style="display: none; margin-bottom: 1rem;">
+            <div style="border: 2px dashed var(--border-color); border-radius: 12px; padding: 2.5rem 1rem; text-align: center; background: var(--bg-input); cursor: pointer;" onclick="document.getElementById('summary-file-input').click()">
+              <i class="fa-solid fa-file-pdf" style="font-size: 2.2rem; color: var(--accent-cyan); margin-bottom: 0.6rem;"></i>
+              <p style="font-weight: 600; color: #FFF; margin-bottom: 0.25rem;">Click or drag & drop PDF / TXT Document</p>
+              <p style="font-size: 0.8rem; color: var(--text-dim);">Accepts .pdf, .txt, or .json contract agreements</p>
+              <input type="file" id="summary-file-input" style="display: none;" accept=".pdf,.txt,.json" onchange="handleSummaryFileSelected(this)">
+            </div>
+            <div id="summary-selected-file-info" style="font-size: 0.85rem; color: var(--accent-cyan); margin-top: 0.6rem; text-align: center; font-weight: 600;"></div>
           </div>
 
           <button class="action-btn" id="summarize-btn" onclick="runDocumentSummary()">
@@ -1348,6 +1367,10 @@
         const models = c.classification.models || {};
         let modelChipsHtml = '';
         for (const [mName, mData] of Object.entries(models)) {
+          if (mData.confidence === 0 && (!mData.probabilities || Object.keys(mData.probabilities).length === 0)) {
+            // Model checkpoint not yet loaded in active inference cache
+            continue;
+          }
           const isAct = (mName === c.classification.active_model);
           modelChipsHtml += `
             <div class="model-chip ${isAct ? 'active-chip' : ''}">
@@ -1421,6 +1444,22 @@
     }
 
     // --- TAB 2: Whole-Document Summarizer ---
+    let selectedSummaryFile = null;
+
+    function switchSummaryInputMode(mode) {
+      document.getElementById('summary-tab-text').classList.toggle('active', mode === 'text');
+      document.getElementById('summary-tab-file').classList.toggle('active', mode === 'file');
+      document.getElementById('summary-mode-text-container').style.display = mode === 'text' ? 'block' : 'none';
+      document.getElementById('summary-mode-file-container').style.display = mode === 'file' ? 'block' : 'none';
+    }
+
+    function handleSummaryFileSelected(input) {
+      if (input.files && input.files[0]) {
+        selectedSummaryFile = input.files[0];
+        document.getElementById('summary-selected-file-info').innerText = `Selected File: ${selectedSummaryFile.name} (${(selectedSummaryFile.size / 1024).toFixed(1)} KB)`;
+      }
+    }
+
     function setSummaryMode(m) {
       selectedSummaryMode = m;
       ['hybrid', 'extractive', 'abstractive'].forEach(item => {
@@ -1436,10 +1475,31 @@
     }
 
     async function runDocumentSummary() {
-      const text = document.getElementById('summary-text-input').value.trim();
-      if (!text || text.length < 30) {
-        alert("Please provide contract text for whole-document summarization (at least 30 characters).");
-        return;
+      const isTextMode = document.getElementById('summary-tab-text').classList.contains('active');
+      let reqOptions = {};
+
+      if (isTextMode) {
+        const text = document.getElementById('summary-text-input').value.trim();
+        if (!text || text.length < 30) {
+          alert("Please provide contract text for whole-document summarization (at least 30 characters).");
+          return;
+        }
+        reqOptions = {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({text: text})
+        };
+      } else {
+        if (!selectedSummaryFile) {
+          alert("Please select a PDF or TXT contract document to summarize.");
+          return;
+        }
+        const formData = new FormData();
+        formData.append('file', selectedSummaryFile);
+        reqOptions = {
+          method: 'POST',
+          body: formData
+        };
       }
 
       const btn = document.getElementById('summarize-btn');
@@ -1447,11 +1507,7 @@
       btn.innerHTML = `<div class="spinner"></div> Synthesizing Legal Summary...`;
 
       try {
-        const res = await fetch(`/api/summarize?mode=${selectedSummaryMode}&length=${selectedSummaryLength}`, {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify({text: text})
-        });
+        const res = await fetch(`/api/summarize?mode=${selectedSummaryMode}&length=${selectedSummaryLength}`, reqOptions);
         const data = await res.json();
         if (data.error) {
           alert(`Summarizer Error: ${data.error}`);
