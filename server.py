@@ -41,7 +41,7 @@ CORS(app)
 # Pre-defined real-world sample contracts for instant 1-click testing
 PRESET_SAMPLES = {
     "saas_autorenewal": {
-        "title": "SaaS Subscription Agreement (Hidden Renewal & Penalty)",
+        "title": "Software-as-a-Service (SaaS) Master Subscription Agreement",
         "text": """1. SUBSCRIPTION TERM & AUTOMATIC RENEWAL.
 The Initial Subscription Term shall commence on the Effective Date and continue for twelve (12) consecutive months. UNLESS CANCELLED BY WRITTEN NOTICE AT LEAST SIXTY (60) DAYS PRIOR TO THE EXPIRATION OF THE CURRENT TERM, THIS AGREEMENT SHALL AUTOMATICALLY RENEW FOR ADDITIONAL 12-MONTH PERIODS. A recurring annual subscription charge of ₹24,999 will be automatically debited from the Customer's registered payment method without prior invoice notification.
 
@@ -58,7 +58,7 @@ The Company reserves the right to modify, increase, or adjust subscription prici
 The Customer hereby waives any right to file suit in any public court or consumer disputes forum. All disputes arising out of this contract shall be submitted to binding unilateral arbitration conducted by a sole arbitrator appointed exclusively by the Company in London, UK."""
     },
     "airline_cancellation": {
-        "title": "Airline Passenger Ticket & Refund Policy",
+        "title": "Commercial Air Transportation Passenger Ticket & Carriage Agreement",
         "text": """SECTION 1: TICKET FARE RULES & CANCELLATION FEES.
 All promotional economy fares purchased through our online booking engine are strictly non-refundable. Cancellations requested within 72 hours of scheduled flight departure will incur a cancellation fee of ₹4,500 per passenger per segment.
 
@@ -69,7 +69,7 @@ SECTION 3: LUGGAGE LOSS & LIMITATION OF LIABILITY.
 In no event shall the Carrier's liability for lost, damaged, or delayed baggage exceed $100 USD total per passenger, regardless of actual loss incurred or declared value."""
     },
     "gym_membership": {
-        "title": "Fitness Club Membership & Penalty Contract",
+        "title": "Fitness Facility & Health Club Service Contract",
         "text": """CLAUSE 1. MEMBERSHIP DUES & AUTOMATIC DEBIT.
 Membership requires a minimum 24-month commitment. Dues of Rs 2,999 per month will be charged via auto-debit on the 1st of each month. 
 
@@ -80,7 +80,7 @@ CLAUSE 3. WAIVER OF INJURY LIABILITY.
 The gym facility shall not be held liable for any personal injury, permanent disability, or property loss suffered by the member while using fitness equipment, regardless of equipment maintenance or staff negligence."""
     },
     "ecommerce_return": {
-        "title": "E-Commerce Consumer Purchase Terms",
+        "title": "E-Commerce Merchant Terms of Sale & Consumer Refund Agreement",
         "text": """1. RETURN & REFUND RESTRICTIONS.
 Item returns must be initiated within 3 days of delivery. Returns will be refunded strictly in the form of non-transferable store reward points. No bank refunds or cash returns will be processed.
 
