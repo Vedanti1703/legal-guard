@@ -20,7 +20,6 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
 logger = logging.getLogger("risk_filter")
 
-# Categories deemed risky (everything except non-risky background clauses)
 RISKY_CATEGORIES = {
     "Liquidated Damages",
     "Notice Period To Terminate Renewal",
@@ -35,7 +34,13 @@ RISKY_CATEGORIES = {
     "termination",
     "liability_limitation",
     "price_increase_condition",
-    "other_consumer_risk"
+    "other_consumer_risk",
+    "real_estate_risk",
+    "loan_risk",
+    "shareholder_risk",
+    "ip_risk",
+    "contract_general_risk",
+    "employment_risk"
 }
 
 SAFE_CATEGORIES = {"other_clause", "unmapped", "none", "standard_term"}
@@ -166,14 +171,20 @@ def evaluate_two_stage_risk(
     # 2. Stage 2: Keyword Gate Evaluation
     passes_keyword_gate = len(keyword_matches) > 0 if keyword_gate_active else True
 
-    # High-severity override (e.g. non-compete Sec 27 or illegal jurisdiction Sec 28)
+    # High-severity override (statutory critical or severe domain risks)
     has_statutory_critical = any(
         m["category_key"] == "restraint" or m["category_key"] == "legal_recourse"
         for m in keyword_matches
     )
+    has_high_severity_domain = any(
+        m["category_key"] in [
+            "real_estate_risk", "loan_risk", "shareholder_risk", "ip_risk", "penalty_fees"
+        ]
+        for m in keyword_matches
+    )
 
-    # Clause is flagged only if both signals agree, OR if a strict statutory critical pattern matches
-    is_flagged = (passes_model_gate and passes_keyword_gate) or has_statutory_critical
+    # Clause is flagged if model & keywords agree, or if a severe risk category or statutory critical pattern matches
+    is_flagged = (passes_model_gate and passes_keyword_gate) or has_statutory_critical or has_high_severity_domain
 
     # 3. Stage 3: Severity Scoring (0 - 100)
     # Base score
@@ -206,12 +217,14 @@ def evaluate_two_stage_risk(
         suggested_actions.insert(0, "Dispute clause cannot oust consumer forum jurisdiction under Consumer Protection Act 2019.")
 
     # Statutory Rule 3: Section 74 ICA 1872 (Liquidated Damages vs Penalty)
-    elif entities.get("amount") not in [None, "N/A"] and any(k in text_lower for k in ["penalty", "liquidated damages", "cancellation fee", "forfeit", "forfeiture"]):
-        risk_score = max(risk_score, 82.0)
+    elif any(k in text_lower for k in ["penalty", "penalties", "liquidated damages", "liquidity damages", "cancellation fee", "early termination fee", "early exit penalty", "forfeit", "forfeiture", "non-refundable", "non-cancellable", "non cancellable"]):
+        # Heightened scrutiny if explicit amount attached or severe punitive terms
+        base_s74 = 82.0 if entities.get("amount") not in [None, "N/A"] else 75.0
+        risk_score = max(risk_score, base_s74)
         risk_level = "HIGH" if risk_level not in ["CRITICAL"] else risk_level
-        amt_str = f"{entities.get('currency', '₹')} {entities.get('amount')}"
+        amt_info = f" ({entities.get('currency', '₹')} {entities.get('amount')})" if entities.get("amount") not in [None, "N/A"] else ""
         statutory_ref = "Section 74, Indian Contract Act 1872 (Compensation for Breach of Contract)"
-        risk_reasons.insert(0, f"Exorbitant penalty or liquidated damages stipulated ({amt_str}). Sec 74 restricts damages to reasonable proved loss.")
+        risk_reasons.insert(0, f"Exorbitant penalty, liquidated/liquidity damages or non-cancellable forfeiture stipulated{amt_info}. Sec 74 restricts damages to reasonable proved loss.")
         suggested_actions.insert(0, "Limit fee to actual direct administrative expense rather than punitive forfeiture.")
 
     # Score aggregation if not overridden by statutory rule

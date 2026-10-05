@@ -151,3 +151,45 @@ def test_filter_clauses_for_output():
     vis_all, hidden_all = filter_clauses_for_output(clauses, min_risk_level="MEDIUM", include_safe=True)
     assert len(vis_all) == 5
     assert hidden_all == 0
+
+
+def test_legal_domain_keywords_loaded():
+    kw = load_risk_keywords()
+    for cat in ["real_estate_risk", "loan_risk", "shareholder_risk", "ip_risk", "contract_general_risk", "employment_risk"]:
+        assert cat in kw, f"Missing category {cat}"
+        assert len(kw[cat]["patterns"]) >= 15
+
+
+def test_real_estate_and_loan_risk_detection():
+    # Real estate encumbrance & builder delay
+    re_clause = "The property is subject to an undisclosed encumbrance and lien. Buyer agrees that builder delay of up to 180 days is non-compensable and booking deposit is non-refundable."
+    re_matches = match_keywords(re_clause)
+    assert any(m["category_key"] == "real_estate_risk" for m in re_matches)
+
+    # Loan acceleration & cross default
+    loan_clause = "Upon any EMI default, cross-default shall be triggered and lender shall execute debt acceleration with 24% penal interest."
+    loan_matches = match_keywords(loan_clause)
+    assert any(m["category_key"] == "loan_risk" for m in loan_matches)
+
+    # Shareholder dilution & drag-along
+    sh_clause = "Investors shall possess drag-along rights and full ratchet anti-dilution protection upon any down round."
+    sh_matches = match_keywords(sh_clause)
+    assert any(m["category_key"] == "shareholder_risk" for m in sh_matches)
+
+
+def test_financial_entity_extraction_multi_column():
+    from src.preprocessing.extract_financial_entities import extract_financial_terms
+    
+    # Clause with amount, notice window, consequence, refund restriction
+    text = (
+        "If the Customer terminates this Agreement prior to the expiration of the subscription period, "
+        "the Customer shall incur a cancellation fee of Rs 10,000 as liquidated damages within 7 business days. "
+        "All accrued fees and advance payments shall be non-refundable. No cash refunds or pro-rated credits will be issued."
+    )
+    ent = extract_financial_terms(text)
+    assert ent["amount"] == "10000"
+    assert ent["currency"] == "INR"
+    assert "7 business days" in ent["deadline"]
+    assert "cancellation fee" in ent["consequence"].lower() or "liquidated damages" in ent["consequence"].lower()
+    assert "no cash refunds" in ent["refund_condition"].lower() or "non-refundable" in ent["refund_condition"].lower()
+

@@ -53,11 +53,12 @@ def get_abstractive_model():
     global _ABSTRACTIVE_PIPELINE
     if _ABSTRACTIVE_PIPELINE is None:
         try:
-            from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, pipeline
+            from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
             model_id = "google/flan-t5-base"
             logger.info(f"Initializing abstractive summarization model ({model_id})...")
             tok = AutoTokenizer.from_pretrained(model_id)
             mdl = AutoModelForSeq2SeqLM.from_pretrained(model_id)
+            mdl.eval()
             _ABSTRACTIVE_PIPELINE = {"tokenizer": tok, "model": mdl}
         except Exception as e:
             logger.warning(f"Could not load abstractive pipeline: {e}. Falling back to extractive mode.")
@@ -152,22 +153,47 @@ def chunk_text(text: str, max_words: int = 400, overlap_words: int = 50) -> List
     return chunks
 
 
-def abstractive_map_reduce(text: str, pipeline, length_setting: str = "medium") -> str:
-    """Executes Map-Reduce chunking for abstractive summarization."""
-    chunks = chunk_text(text, max_words=350, overlap_words=40)
-    chunk_summaries = []
+def _run_seq2seq(prompt: str, pipe_dict, max_toks: int = 120, min_toks: int = 25) -> str:
+    """Helper to run seq2seq text generation fast under torch.no_grad()."""
+    if isinstance(pipe_dict, dict) and "tokenizer" in pipe_dict:
+        tok = pipe_dict["tokenizer"]
+        mdl = pipe_dict["model"]
+        inputs = tok(prompt, return_tensors="pt", truncation=True, max_length=512)
+        with torch.no_grad():
+            outputs = mdl.generate(
+                **inputs,
+                max_new_tokens=max_toks,
+                min_length=min_toks,
+                num_beams=2,
+                early_stopping=True
+            )
+        return tok.decode(outputs[0], skip_special_tokens=True).strip()
+    elif callable(pipe_dict):
+        with torch.no_grad():
+            res = pipe_dict(prompt, max_length=max_toks, min_length=min_toks, do_sample=False)
+            return res[0]["generated_text"].strip()
+    return prompt[:200]
 
-    max_toks = 80 if length_setting == "short" else (120 if length_setting == "medium" else 180)
-    min_toks = 25 if length_setting == "short" else 40
+
+def abstractive_map_reduce(text: str, pipeline, length_setting: str = "medium") -> str:
+    """Executes Map-Reduce chunking for abstractive summarization efficiently."""
+    chunks = chunk_text(text, max_words=350, overlap_words=30)
+    
+    # Cap total chunks to 3 max for big documents to maintain sub-5s response speed
+    if len(chunks) > 3:
+        chunks = [chunks[0], chunks[len(chunks)//2], chunks[-1]]
+
+    chunk_summaries = []
+    max_toks = 70 if length_setting == "short" else (110 if length_setting == "medium" else 150)
+    min_toks = 20 if length_setting == "short" else 35
 
     for idx, ch in enumerate(chunks):
-        prompt = f"Summarize key terms, obligations, and penalties concisely in plain English:\n{ch}"
+        prompt = f"Summarize key contract terms, obligations, and penalties in plain English:\n{ch}"
         try:
-            out = pipeline(prompt, max_length=max_toks, min_length=min_toks, do_sample=False)
-            chunk_summaries.append(out[0]["generated_text"].strip())
+            summary = _run_seq2seq(prompt, pipeline, max_toks=max_toks, min_toks=min_toks)
+            chunk_summaries.append(summary)
         except Exception as e:
             logger.warning(f"Abstractive chunk {idx} failed: {e}")
-            # Fallback for this chunk
             chunk_summaries.append(ch[:250])
 
     if len(chunk_summaries) == 1:
@@ -175,13 +201,13 @@ def abstractive_map_reduce(text: str, pipeline, length_setting: str = "medium") 
 
     # Reduce Stage
     combined_intermediate = " ".join(chunk_summaries)
-    reduce_prompt = f"Synthesize these key contract points into a coherent executive overview:\n{combined_intermediate}"
+    reduce_prompt = f"Synthesize these contract points into a clear executive overview:\n{combined_intermediate}"
     try:
-        final_out = pipeline(reduce_prompt, max_length=max_toks * 2, min_length=min_toks, do_sample=False)
-        return final_out[0]["generated_text"].strip()
+        final_out = _run_seq2seq(reduce_prompt, pipeline, max_toks=max_toks * 2, min_toks=min_toks)
+        return final_out
     except Exception as e:
         logger.warning(f"Abstractive reduce stage failed: {e}")
-        return " ".join(chunk_summaries[:3])
+        return " ".join(chunk_summaries[:2])
 
 
 def extract_structured_key_points(full_text: str, sentences: List[str]) -> Dict[str, str]:
