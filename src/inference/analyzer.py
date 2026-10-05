@@ -341,6 +341,109 @@ def classify_clause(clause_text: str) -> Dict[str, Any]:
     }
 
 
+def compute_document_multi_model_analysis(clauses: List[Dict[str, Any]]) -> Dict[str, Any]:
+    """
+    Executes a multi-model comparative analysis on the user input document across all 3 models
+    (TF-IDF, Legal-BERT, DeBERTa-v3) and determines the single BEST model for THIS document.
+    """
+    if not clauses:
+        return {}
+
+    RISKY_CATEGORIES = {
+        "automatic_renewal", "renewal_notice", "penalty", "liability_limitation",
+        "price_increase_condition", "court_waiver", "unilateral_modification", "post_termination"
+    }
+
+    model_keys = ["legalbert", "deberta", "tfidf"]
+    model_names = {
+        "legalbert": "Legal-BERT (Domain Transformer)",
+        "deberta": "DeBERTa-v3 (General Transformer)",
+        "tfidf": "TF-IDF + Logistic Regression Baseline"
+    }
+
+    stats = {m: {
+        "confidences": [],
+        "risky_count": 0,
+        "high_conf_count": 0
+    } for m in model_keys}
+
+    unanimous_agree = 0
+    partial_agree = 0
+    disagree_count = 0
+
+    for c in clauses:
+        models_data = c.get("classification", {}).get("models", {})
+        preds = {}
+        for m in model_keys:
+            m_info = models_data.get(m, {})
+            cat = m_info.get("category", "other_clause")
+            conf = float(m_info.get("confidence", 0.0))
+            
+            stats[m]["confidences"].append(conf)
+            if conf >= 0.70:
+                stats[m]["high_conf_count"] += 1
+            if cat in RISKY_CATEGORIES:
+                stats[m]["risky_count"] += 1
+            preds[m] = cat
+
+        unique_preds = set(preds.values())
+        if len(unique_preds) == 1:
+            unanimous_agree += 1
+        elif len(unique_preds) == 2:
+            partial_agree += 1
+        else:
+            disagree_count += 1
+
+    total_c = max(1, len(clauses))
+    model_summary = {}
+    model_scores = {}
+
+    for m in model_keys:
+        confs = stats[m]["confidences"]
+        avg_conf = float(np.mean(confs)) if confs else 0.0
+        high_conf_pct = stats[m]["high_conf_count"] / total_c
+        risky_cnt = stats[m]["risky_count"]
+
+        # Composite score for THIS document suitability
+        domain_boost = 0.05 if m == "legalbert" else (0.03 if m == "deberta" else 0.0)
+        score = round((avg_conf * 0.55) + (high_conf_pct * 0.40) + domain_boost, 4)
+
+        model_summary[m] = {
+            "model_key": m,
+            "name": model_names[m],
+            "avg_confidence": round(avg_conf * 100, 1),
+            "high_confidence_rate": round(high_conf_pct * 100, 1),
+            "risky_clauses_flagged": risky_cnt,
+            "document_fit_score": score,
+            "est_latency": f"{round(len(clauses) * (10.0 if m == 'legalbert' else (32.5 if m == 'deberta' else 0.4)), 1)}ms"
+        }
+        model_scores[m] = score
+
+    # Select Best Model for THIS document
+    best_model_key = max(model_scores, key=model_scores.get)
+    best_info = model_summary[best_model_key]
+
+    reasons = {
+        "legalbert": f"Legal-BERT is evaluated as the BEST MODEL for this document with high mean confidence ({best_info['avg_confidence']}%) and pre-trained legal domain representations fine-tuned on contract clauses.",
+        "deberta": f"DeBERTa-v3 is evaluated as the BEST MODEL for this document with maximum classification certainty ({best_info['avg_confidence']}%) across complex syntactic structures.",
+        "tfidf": f"TF-IDF Baseline is evaluated as the BEST MODEL for this document due to clear n-gram phrase matches with zero memory footprint."
+    }
+
+    return {
+        "best_model_key": best_model_key,
+        "best_model_name": model_names[best_model_key],
+        "best_model_reason": reasons.get(best_model_key, "Selected based on highest precision and certainty for this input."),
+        "model_comparison": model_summary,
+        "agreement_stats": {
+            "unanimous_agreement_pct": round((unanimous_agree / total_c) * 100, 1),
+            "unanimous_clauses": unanimous_agree,
+            "partial_agreement_clauses": partial_agree,
+            "disagreement_clauses": disagree_count,
+            "total_clauses": total_c
+        }
+    }
+
+
 def analyze_contract_text(
     full_text: str,
     min_risk_level: str = "MEDIUM",
@@ -402,7 +505,7 @@ def analyze_contract_text(
                 "value": tl["value"]
             })
 
-        # 6. Focal Risk Parts Extraction (Focus on core trigger sentences rather than entire clause)
+        # 6. Focal Risk Parts Extraction
         focal_res = extract_focal_risk_parts(
             clause_text=c_text,
             highlight_phrases=risk_res["highlight_phrases"],
@@ -503,12 +606,16 @@ def analyze_contract_text(
                 "keywords": vc["focal_keywords_matched"]
             })
 
+    # Execute Multi-Model Input Analysis across all clauses for THIS input document
+    doc_multi_model_eval = compute_document_multi_model_analysis(all_analyzed_clauses)
+
     return {
         "contract_health_score": contract_health_score,
         "overall_verdict": overall_verdict,
-        "active_model": cls_res["active_model"],
+        "active_model": cls_res["active_model"] if all_analyzed_clauses else "legalbert",
         "safe_clauses_hidden": safe_hidden_count,
         "min_risk_level_filter": min_risk_level,
+        "document_multi_model_analysis": doc_multi_model_eval,
         "stats": {
             "total_clauses": num_clauses,
             "flagged_clauses": len(visible_clauses),
